@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Alias: Graphios
+# Menu: Addons
+# Description:
+#  Here you can enable/disable distributed features based on Graphios.
+
+case "$1" in
+    default)
+        echo "off"
+    ;;
+    choices)
+        echo "off: disable graphios features"
+        echo "on: enable graphios features"
+    ;;
+    set)
+        # this just enables/disables the gearman settings tree
+        if [ "$2" = "on" ]; then
+            if [ ! -d $OMD_ROOT/etc/graphios/. ]; then
+                echo "ERROR: make sure $OMD_ROOT/etc/graphios exists! (Should have been shipped with OMD)"
+                exit 1
+            fi
+            mkdir -p $OMD_ROOT/etc/nagios/nagios.d
+            ln -sfn ../../graphios/nagios.cfg $OMD_ROOT/etc/nagios/nagios.d/graphios.cfg
+	    cp -pr ../../graphios/pnp4nagios.cfg $OMD_ROOT/etc/nagios/conf.d/pnp4nagios.cfg
+        else
+            rm -f $OMD_ROOT/etc/nagios/nagios.d/graphios.cfg
+	    sed -i -e 's/&&\ cp ###ROOT###\/var\/pnp4nagios\/spool\/host-perfdata.$TIMET$\ ###ROOT###\/var\/graphios\/spool\///' $OMD_ROOT/etc/nagios/conf.d/pnp4nagios.cfg
+	    sed -i -e 's/&&\ cp ###ROOT###\/var\/pnp4nagios\/spool\/service-perfdata.$TIMET$\ ###ROOT###\/var\/graphios\/spool\///' $OMD_ROOT/etc/nagios/conf.d/pnp4nagios.cfg
+        fi
+    ;;
+esac

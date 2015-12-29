@@ -23,7 +23,7 @@ RETVAL=0
 
 start () {
         log_daemon_msg "Starting $DESC" "$NAME"
-        /usr/bin/sudo -u $GRAPHIOS_USER  $prog &
+        $prog &
         log_end_msg $?
         echo
 }
